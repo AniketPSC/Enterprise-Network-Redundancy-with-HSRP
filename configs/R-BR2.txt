@@ -1,0 +1,26 @@
+! R-BR2 (Branch 2 router)
+hostname R-BR2
+no ip domain-lookup
+
+interface Serial0/0/0
+ ip address 10.0.2.2 255.255.255.252
+ no shutdown
+exit
+
+interface Gi0/0
+ ip address 10.2.10.1 255.255.255.0
+ no shutdown
+exit
+
+! DHCP relay to HQ
+interface Gi0/0
+ ip helper-address 10.255.255.1
+exit
+
+router ospf 1
+ router-id 22.22.22.22
+ network 10.0.2.0 0.0.0.3 area 0
+ network 10.2.10.0 0.0.0.255 area 0
+exit
+
+write memory
