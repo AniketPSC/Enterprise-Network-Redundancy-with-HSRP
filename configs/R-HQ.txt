@@ -1,31 +1,33 @@
-! R-HQ (WAN head router)
+enable
+configure terminal
 hostname R-HQ
 no ip domain-lookup
 
-! Links to cores
+! Routed links to cores
 interface Gi0/0
  ip address 10.0.0.1 255.255.255.252
  no shutdown
 exit
-
 interface Gi0/1
  ip address 10.0.0.5 255.255.255.252
  no shutdown
 exit
 
-! Serial links to branches (DCE on R-HQ)
+! WAN serial to BR1 (DCE side → needs clock rate)
 interface Serial0/0/0
  ip address 10.0.1.1 255.255.255.252
  clock rate 64000
  no shutdown
 exit
 
+! WAN serial to BR2 (DCE side → needs clock rate)
 interface Serial0/0/1
  ip address 10.0.2.1 255.255.255.252
  clock rate 64000
  no shutdown
 exit
 
+! OSPF backbone
 router ospf 1
  router-id 10.10.10.10
  network 10.0.0.0 0.0.0.3 area 0
@@ -34,4 +36,4 @@ router ospf 1
  network 10.0.2.0 0.0.0.3 area 0
 exit
 
-write memory
+do write
