@@ -1,0 +1,45 @@
+! Access switch at HQ (2960)
+hostname SW-ACC
+
+vlan 10
+ name HR
+vlan 20
+ name Finance
+vlan 30
+ name IT
+exit
+
+interface range Fa0/2
+ switchport mode access
+ switchport access vlan 10
+ spanning-tree portfast
+ no shutdown
+exit
+
+interface range Fa0/3
+ switchport mode access
+ switchport access vlan 20
+ spanning-tree portfast
+ no shutdown
+exit
+
+interface range Fa0/4
+ switchport mode access
+ switchport access vlan 30
+ spanning-tree portfast
+ no shutdown
+exit
+
+interface Gi0/1
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30
+ no shutdown
+exit
+
+interface Gi0/2
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30
+ no shutdown
+exit
+
+write memory
