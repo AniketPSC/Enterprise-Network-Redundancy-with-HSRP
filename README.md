@@ -1,41 +1,48 @@
-# 🌐 Enterprise Network Redundancy with HSRP
+# Enterprise Network Redundancy with HSRP, OSPF & Centralized DHCP
 
-## 📌 Overview
-This project demonstrates the design and implementation of a **resilient Layer 3 enterprise network** with:
-- **VLAN segmentation** for logical isolation
-- **Inter-VLAN routing** using Layer 3 switches
-- **Hot Standby Router Protocol (HSRP)** for gateway redundancy and high availability
-
-The goal was to ensure **seamless failover** in case of device/link failure, with minimal packet loss and uninterrupted user experience.
-
-Built and tested in **Cisco Packet Tracer**.
+**High-availability enterprise network simulation** demonstrating VLAN segmentation, inter-VLAN routing, centralized DHCP, OSPF WAN routing, and HSRP-based gateway redundancy.  
+Implemented & tested in **Cisco Packet Tracer**.
 
 ---
 
-## 🖥️ Network Topology
-![Topology](images/topology.png)
+## 🔍 Project Overview
+This repository contains a practical, interview-ready network lab that shows how to design and operate a resilient campus + branch network:
 
-- **L3SW-1**: Primary Layer 3 switch, HSRP Active for VLAN 10
-- **L3SW-2**: Secondary Layer 3 switch, HSRP Standby for VLAN 10
-- **Access Switch**: Provides connectivity to end devices
-- **PCs in VLAN 10**: Connected via redundant default gateway
-
----
-
-## ⚙️ Key Features
-✔️ VLANs for segmentation and traffic isolation  
-✔️ Inter-VLAN Routing on L3 switches  
-✔️ HSRP for **default gateway redundancy** (`10.0.10.1`)  
-✔️ **Preemption + Priority** to force active/standby role assignment  
-✔️ High Availability testing with real-time failover  
+- **VLAN segmentation** for HR, Finance, IT
+- **Inter-VLAN routing** on Layer-3 switches (SVIs)
+- **HSRP** for default-gateway redundancy (Active/Standby)
+- **Centralized DHCP** on L3 core + **DHCP relay** (`ip helper-address`) at branch routers
+- **OSPF** for dynamic routing across WAN links (Area 0)
+- **ACLs** to enforce intra-site policies (example: block HR → IT)
+- Config backup via **TFTP** (optional)
 
 ---
 
-## 🔑 Sample HSRP Configuration
-```bash
-interface Vlan10
- ip address 10.0.10.2 255.255.255.0
- standby 10 ip 10.0.10.1
- standby 10 priority 110
- standby 10 preempt
+## 🖼 Topology (brief)
+- HQ: two multilayer switches (`L3SW-1`, `L3SW-2`) in HSRP pair + access switch `SW-ACC` and router `R-HQ` for WAN.  
+- Branches: `R-BR1` + `SW-BR1`, `R-BR2` + `SW-BR2` connected via serial WAN to `R-HQ`.  
+- DHCP runs on `L3SW-1` (centralized); branches forward DHCP with `ip helper-address` to `L3SW-1` loopback.
 
+*(See `images/topology.png` for a diagram — include a screenshot from Packet Tracer.)*
+
+---
+
+## 🔧 What’s included
+- `hsrp_network.pkt` — Packet Tracer simulation file (open in Packet Tracer).  
+- `configs/` — text copies of device configs (for quick review / copy-paste).  
+- `images/` — topology screenshot & failover test screenshot.  
+- `docs/report.pdf` — optional short report (one page) describing design decisions and results.
+
+---
+
+## ⚙️ Key configuration highlights (concise)
+- **HSRP (VLAN 10)**  
+  `standby 10 ip 10.0.10.1` on both L3 switches (L3SW-1 priority 110, L3SW-2 priority 100) — hosts use `10.0.10.1` as gateway.
+
+- **Centralized DHCP (L3SW-1)**: pools for VLANs + branch networks.  
+  Example pool:
+  ```bash
+  ip dhcp pool VLAN10-HR
+   network 10.0.10.0 255.255.255.0
+   default-router 10.0.10.1
+   dns-server 8.8.8.8
