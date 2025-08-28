@@ -15,7 +15,7 @@ Designed and implemented an enterprise-like network topology with:
 - **ACLs** to enforce role-based traffic policies (example: block HR → IT)
 - Config exports & failover testing for demonstration
 
-This project is interview-ready: configs, Packet Tracer file, topology image and verification steps are included.
+ configs, Packet Tracer file, topology image and verification steps are included.
 
 ---
 
